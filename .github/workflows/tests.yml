@@ -23,4 +23,5 @@ jobs:
           pip install pytest
 
       - name: Run tests
-        run: pytest -q
+        run: |
+          pytest -q tests --maxfail=1 --disable-warnings
