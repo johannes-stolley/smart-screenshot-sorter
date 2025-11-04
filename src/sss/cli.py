@@ -49,36 +49,33 @@ def scan(
 
 
     sorted_screenshots = sorted(screenshots, key = lambda p: p.stat().st_mtime, reverse=True)
-    moved = 0
-    simulated = 0
-    total = len(sorted_screenshots)
-
+   
+    summary = Summary(out_root=out_root)
 
     typer.echo("Gefundene Screenshots:")
     for file_path in sorted_screenshots:
         dest_dir = build_target_path(file_path, out_root)
         mtime = file_path.stat().st_mtime
         change_time = datetime.fromtimestamp(mtime).strftime("%d.%m.%Y %H:%M:%S")
-        file_size = file_path.stat().st_size
-        file_size_mb = file_size / (1024 * 1024)   
-        typer.echo(f"PLAN: {file_path}  ->  {dest_dir}")
+        file_size_mb = file_path.stat().st_size / (1024 * 1024)
+        typer.echo(f"PLAN: {file_path.name} -> {dest_dir}  ({file_size_mb:.2f} MB, {change_time})")
 
-        if dry_run:
-            typer.echo(f"🟡 Simulation: {file_path.name} → {dest_dir}")
-            simulated += 1
+        if not dry_run:
+            dest_dir = build_target_path(file_path, out_root)
+            safe_move(file_path, dest_dir)
+            summary.inc_moved()
+            typer.echo(f"✓ Verschoben: {file_path.name} -> {dest_dir}")
         else:
-            final_path = safe_move(file_path, dest_dir)
-            typer.echo(f"🟢 Verschoben: {file_path.name} → {final_path}")
-            moved += 1
+            summary.inc_simulated()
+            typer.echo(f"✈ Simulation: {file_path.name} -> {dest_dir}")
 
-    typer.echo(
-        f"\n✅ Zusammenfassung: gesamt={total} | verschoben={moved} | simuliert={simulated} | zielbasis={out_root}"
-    )
-
+    typer.echo("\n" + summary.render())
 
 
 if __name__ == "__main__":
-    app() 
+    import sys
+    sys.exit(app())
+
 
 
 
