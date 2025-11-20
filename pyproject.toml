@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smart-screenshot-sorter"
+version = "0.1.0"
+description = "CLI tool to scan, sort and deduplicate screenshot folders."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+authors = [
+  { name = "Johannes Stolley" }
+]
+
+dependencies = [
+  "typer>=0.12",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "pytest-cov",
+  "ruff",
+  "black",
+  "pre-commit",
+]
+
+[project.scripts]
+sss = "sss.cli:app"
