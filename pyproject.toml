@@ -24,6 +24,7 @@ dev = [
   "ruff",
   "black",
   "pre-commit",
+  "Pillow",
 ]
 
 [project.scripts]
