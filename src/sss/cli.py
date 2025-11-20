@@ -1,12 +1,11 @@
 from pathlib import Path
-import typer 
-import os
 from datetime import datetime
-import shutil
+
+import typer
+
 from .mover import build_target_path, safe_move
 from .summary import Summary
 import sss.dedupe as dedupe_module
-
 
 
 

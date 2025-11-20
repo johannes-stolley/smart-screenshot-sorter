@@ -6,6 +6,8 @@ from sss.metadata import get_mime_type
 from sss.metadata import extract_metadata
 from sss.metadata import get_image_size
 from PIL import Image
+from sss.metadata import get_file_size
+
 
 def test_get_file_ext_basic_uppercase_to_lower(tmp_path: Path):
     f = tmp_path / "bild.JPG"
@@ -37,7 +39,6 @@ def test_get_file_ext_no_extension(tmp_path):
     assert get_file_ext(f) == ""
 
 
-from sss.metadata import get_file_size
 
 def test_get_file_size_bytes(tmp_path):
     f = tmp_path / "a.bin"

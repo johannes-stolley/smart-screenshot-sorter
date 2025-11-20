@@ -3,13 +3,14 @@ import os
 from pathlib import Path
 from datetime import datetime
 import sys
+from typer.testing import CliRunner  # type: ignore
+from sss.cli import app              # jetzt importierbar
 
 # Repo-Root/src auf den Modulpfad legen (damit "from sss..." funktioniert)
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT / "src"))
 
-from typer.testing import CliRunner  # type: ignore
-from sss.cli import app              # jetzt importierbar
+
 
 runner = CliRunner()
 
