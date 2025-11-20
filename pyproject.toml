@@ -28,3 +28,9 @@ dev = [
 
 [project.scripts]
 sss = "sss.cli:app"
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
