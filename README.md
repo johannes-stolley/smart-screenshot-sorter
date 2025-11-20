@@ -1,227 +1,220 @@
-\# 📸 Smart Screenshot Sorter
+# Smart Screenshot Sorter
 
+[![Status](https://img.shields.io/badge/status-in_development-blue?style=flat-square)](#)
+[![Tests](https://img.shields.io/badge/tests-pytest-blueviolet?style=flat-square)](https://docs.pytest.org/)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](https://www.python.org/)
+[![Type](https://img.shields.io/badge/project-CLI_tool-lightgrey?style=flat-square)](#)
 
+------------------------------------------------------------------------
 
-Ein Python-Tool, das automatisch Screenshots (z. B. PNG, JPG) in einem angegebenen Ordner findet, 
+## Inhalt
 
-sortiert und optional nach Datum in Unterordner verschiebt.  
+1.  [Überblick](#überblick)
+2.  [Funktionen](#funktionen)
+3.  [Installation](#installation)
+4.  [CLI-Nutzung](#cli-nutzung)
+    -   [scan](#scan)
+    -   [dedupe](#dedupe)
+5.  [Tests](#tests)
+6.  [Architektur](#architektur)
+7.  [Roadmap](#roadmap)
 
-Das Projekt dient als Lernübung für \*\*Python\*\*, \*\*CLI-Entwicklung\*\* und \*\*GitHub-Projektstruktur\*\*.
+------------------------------------------------------------------------
 
+## Überblick
 
+Smart Screenshot Sorter (SSS) ist ein modular aufgebautes
+Python-CLI-Werkzeug zur Analyse, Sortierung und Bereinigung von
+Bilddateien, insbesondere Screenshots.
 
----
+Ziel des Projekts ist es: - eine klare Softwarearchitektur zu üben, -
+testgetrieben zu entwickeln (TDD), - CLI-Tools professionell
+aufzubauen, - wiederholbare, stabile Dateioperationen sicherzustellen.
 
+SSS trennt die CLI-Schicht klar von der Logik und ist vollständig
+testbar.
 
+------------------------------------------------------------------------
 
-\## 🎯 Ziel des Projekts
+## Funktionen
 
-\- Python in einem echten Projektkontext anwenden  
+### 1. Scan
 
-\- Ein eigenes CLI-Tool mit \*\*Typer\*\* entwickeln  
+Analysiert ein Eingabeverzeichnis, erkennt gängige Screenshot-Dateien
+und erzeugt eine Zielstruktur nach Jahr und Monat.
 
-\- Den Umgang mit \*\*virtuellen Umgebungen (venv)\*\*, \*\*Git\*\* und \*\*VS Code\*\* trainieren  
+-   Standard: Dry-Run (keine Änderungen)
+-   Verschieben nur mit `--no-dry-run`
+-   Konfigurierbares Zielverzeichnis
 
-\- Projekt als Referenz im GitHub-Portfolio nutzen  
+### 2. Duplicate Detection (dedupe)
 
+Erkennt doppelte Dateien (über Hashvergleich) und generiert definierte
+Aktionen für deren Bereinigung.
 
+-   Standard: Dry-Run
+-   Mit `--execute`: Aktionen wirklich ausführen
+-   Klare und nachvollziehbare Ausgabe
+-   Alle Operationen testbar
 
----
+### 3. Sichere Operationen
 
+Alle Dateiaktionen sind gekapselt und reproduzierbar.\
+Tests stellen sicher, dass: - Dry-Runs nie Dateien verändern -
+Execute-Modi zuverlässig verschieben - Fehlerfälle abgefangen werden
 
+------------------------------------------------------------------------
 
-\## ⚙️ Installation
+## Installation
 
+**Voraussetzungen:** - Python 3.10 oder höher\
+- Virtuelle Umgebung empfohlen
 
-
-1\. Repository klonen oder herunterladen  
-
-2\. Virtuelle Umgebung erstellen:
-
-&nbsp;  ```bash
-
-&nbsp;  python -m venv .venv
-
-Aktivieren:
-
-
-
-bash
-
-Code kopieren
-
-.\\.venv\\Scripts\\Activate.ps1
-
-Abhängigkeiten installieren:
-
-
-
-bash
-
-Code kopieren
-
+``` bash
+git clone <REPO_URL>
+cd smart-screenshot-sorter
+python -m venv .venv
+source .venv/bin/activate      # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
+```
 
-🧩 Aktuell implementierte Funktionen
+CLI starten:
 
-Funktion	Beschreibung	Beispielausgabe
-
-Scan-Funktion (scan <Pfad>)	Durchsucht den angegebenen Ordner nach Screenshots (.png, .jpg, .jpeg). Erkennt alle Dateien, sortiert sie nach Änderungsdatum und gibt Dateigröße sowie Änderungszeit aus.	```bash
-
-python -m src.sss.cli scan C:\\Users<USER>\\Downloads		
-
-
-
-Gefundene Screenshots:
-
-
-
-IMG\_0846.jpg – 0.33 MB – 10.02.2022 16:27:00
-
-
-
-|
-
-Code kopieren
-
-| \*\*Sortiermodus\*\* | Sortiert Screenshots automatisch nach Änderungsdatum (neueste zuerst). | ```bash
-
-Sortierreihenfolge: Neueste zuerst
-
-``` |
-
-| \*\*Dry-Run-Feature\*\* (`--dry-run`) | Simuliert das Verschieben in nach Datum geordnete Unterordner (`/by\_date/Jahr/Monat`). Keine Dateien werden verändert, nur der geplante Zielort angezeigt. | ```bash
-
-PLAN: IMG\_0854.jpg → by\_date/2022/02
-
-Nur Simulation (dry-run aktiv)
-
-``` |
-
-| \*\*Tatsächliches Verschieben\*\* | Wenn `--dry-run` \*\*nicht\*\* gesetzt ist, werden Dateien wirklich verschoben und nach Jahr/Monat einsortiert. | ```bash
-
-✅ Verschoben: IMG\_0854.jpg → by\_date/2022/02
-
-``` |
-
-
-
----
-
-
-
-\## 💻 Verwendung
-
-### Hilfe anzeigen
-```bash
+``` bash
 python -m src.sss.cli --help
+```
 
-\### Simulation (keine Dateien werden verändert)
+------------------------------------------------------------------------
 
-```bash
+## CLI-Nutzung
 
-python -m src.sss.cli scan "C:\Users\<DEINNAME>\Downloads"
+Die CLI basiert auf Typer und ist bewusst minimalistisch und konsistent
+gehalten.
 
-Zielbasis selbst wählen (--out-dir)
+------------------------------------------------------------------------
 
-python -m src.sss.cli scan "C:\Users\<DEINNAME>\Downloads" --out-dir "D:\Screenshots"
+### scan
 
+Analysiert ein Verzeichnis, erkennt Screenshots und plant
+Sortieraktionen.
 
-Tatsächliches Verschieben
+**Dry-Run (Standard):**
 
-bash
+``` bash
+python -m src.sss.cli scan "C:/Users/<Name>/Downloads"
+```
 
-python -m src.sss.cli scan "C:\Users\<DEINNAME>\Downloads" --no-dry-run --out-dir "D:\Screenshots"
+**Zielverzeichnis angeben:**
 
-🧠 Beispielausgaben
+``` bash
+python -m src.sss.cli scan "C:/Downloads" --out-dir "D:/Screenshots"
+```
 
-📁 Zielbasis: D:\Screenshots
-Gefundene Screenshots:
-🟡 Simulation: IMG_0853.jpg → D:\Screenshots\2022\02
-…
-✅ Zusammenfassung: gesamt=12 | verschoben=0 | simuliert=12 | zielbasis=D:\Screenshots
+**Operationen ausführen (kein Dry-Run):**
 
+``` bash
+python -m src.sss.cli scan "C:/Downloads" --no-dry-run --out-dir "D:/Screenshots"
+```
 
-📁 Projektstruktur
+------------------------------------------------------------------------
 
+### dedupe
 
+Erkennt doppelte Dateien und plant Move-Aktionen.
 
-📸 Scan-Ausgabe
+**Dry-Run (Standard):**
 
+``` bash
+python -m src.sss.cli dedupe "C:/Users/<Name>/Downloads"
+```
 
+Beispielausgabe:
 
-🧰 Verwendete Technologien
+    Dry-Run: 3 geplante Aktionen
+    MOVE C:/Downloads/a.jpg -> C:/Downloads/duplicates/a.jpg
+    MOVE C:/Downloads/b.jpg -> C:/Downloads/duplicates/b.jpg
 
-Python 3.10+
+**Moves ausführen:**
 
+``` bash
+python -m src.sss.cli dedupe --execute "C:/Downloads"
+```
 
+Beispiel:
 
-Typer (CLI-Framework)
+    Ausführung abgeschlossen.
+    Verschoben: 3 Dateien
 
+------------------------------------------------------------------------
 
+## Tests
 
-OS (Modul für Dateiverwaltung)
+SSS wurde vollständig testgetrieben entwickelt.
 
+Tests starten:
 
+``` bash
+pytest
+```
 
-Datetime (Zeitstempel-Umwandlung)
+Coverage:
 
+``` bash
+pytest --cov=src/sss
+```
 
+Abgedeckte Szenarien:
 
-VS Code \& GitHub
+-   Dry-Run ohne Auswirkungen
+-   Execute verschiebt Dateien korrekt
+-   Keine Duplikate → informative Ausgabe
+-   Fehlerhafte Pfade → stabile Reaktion
+-   Konsistentes Verhalten über `CliRunner`
 
+------------------------------------------------------------------------
 
+## Architektur
 
-📅 Geplante Erweiterungen
+Verzeichnisstruktur:
 
-🧠 Duplicate Detector – erkennt doppelte Screenshots (dedupe.py)
+    src/sss/
+    │
+    ├── cli.py            # CLI (Typer), ruft Pipeline-Schritte auf
+    ├── dedupe.py         # Duplicate Detection, DedupAction, execute_actions
+    ├── mover.py          # Sichere Dateioperationen
+    ├── summary.py        # Ausführungsstatistiken
+    ├── metadata.py       # (in Planung)
+    └── utils.py          # Hilfsfunktionen
 
+Designprinzipien:
 
+-   Trennung von CLI und Logik
+-   Keine versteckten I/O-Operationen
+-   Reproduzierbares Verhalten
+-   Vollständige Testbarkeit
+-   Kleine, klar verantwortliche Module
 
-🗂️ Metadata Extractor – liest EXIF- oder Dateimetadaten aus (metadata.py)
+------------------------------------------------------------------------
 
+## Roadmap
 
+### Geplant
 
-🚚 Mover – verschiebt Dateien automatisch nach Regeln (mover.py)
+-   Bessere Formatierung der CLI-Ausgabe
+-   Erweiterte Fehlerbehandlung
+-   EXIF-/Metadatenunterstützung
+-   Automatisches Umbenennen von Dateien
+-   Verzeichnisüberwachung (Watcher)
+-   Packaging als `pip`-Modul
 
+### Mittelfristig
 
+-   Konsolidierte CLI mit Subcommands
+-   Konfigurierbare Pipeline-Regeln
+-   Plugin-basierte Actions
 
-🏷️ Renamer – vergibt automatisch sprechende Dateinamen (renamer.py)
+### Langfristig
 
-
-
-🔄 Watcher – beobachtet Ordner in Echtzeit (watcher.py)
-
-
----
-
-## 📚 Über dieses Projekt
-
-Dieses Tool ist Teil meines Lernprozesses in Python.  
-Ich habe es mit Unterstützung von ChatGPT Schritt für Schritt aufgebaut, um zu verstehen,  
-wie man eine eigene CLI-Anwendung strukturiert und mit Dateien arbeitet.
-
-Der Fokus liegt nicht auf perfektem Code, sondern auf dem **Lernfortschritt** –  
-insbesondere beim Verständnis und Anwenden von:
-
-- 🧩 `pathlib` → Dateipfade und Ordnerverwaltung  
-- ⏰ `datetime` → Arbeit mit Zeitstempeln  
-- ⚙️ `typer` → Aufbau einer Kommandozeilen-App  
-- 📁 Projektstruktur, CLI-Optionen und Modullogik
-
-Ich verstehe die zentralen Abläufe und kann den Code erklären,  
-weil jeder Teil bewusst mit Unterstützung entwickelt und nachvollzogen wurde.
-
-> 💡 Ziel war nicht, ein Produkt zu veröffentlichen, sondern **praktisch zu lernen**,  
-> wie Python-Code in realen Projekten organisiert und umgesetzt wird.
-
-
-
-🧾 Lizenz
-
-
-
-Dieses Projekt dient Lernzwecken.
-
-(c) 2025 Johannes Stolley
-
+-   ML-basierte Screenshot-Kategorisierung
+-   GUI-Frontend
+-   Cross-Plattform-Support

@@ -4,7 +4,8 @@ import os
 from datetime import datetime
 import shutil
 from .mover import build_target_path, safe_move
-from sss.summary import Summary
+from .summary import Summary
+import sss.dedupe as dedupe_module
 
 
 
@@ -78,5 +79,36 @@ if __name__ == "__main__":
 
 
 
+@app.command()
+def dedupe(
+    directory: Path,
+    execute: bool = typer.Option(
+        False,
+        "--execute",
+        help="Aktionen wirklich ausführen statt nur Dry-Run.",
+    ),
+) -> None:
+    """Findet Duplikate und zeigt einen Dry-Run oder führt die Aktionen aus."""
 
-   # python -m src.sss.cli scan C:\Users\stoll\Downloads
+    actions = dedupe_module.plan_moves(directory)
+
+    if not actions:
+        typer.echo("Keine doppelten Dateien gefunden.")
+        raise typer.Exit(code=0)
+
+    if not execute:
+        # wie bisher: nur anzeigen
+        typer.echo(f"Dry-Run: {len(actions)} geplante Aktionen")
+        for act in actions:
+            # act ist DedupAction
+            typer.echo(f"{act.action.upper()} {act.src} -> {act.dst}")
+        raise typer.Exit(code=0)
+
+    # == execute == True ==
+    summary = Summary(out_root=directory)
+    dedupe_module.execute_actions(actions, summary)
+
+
+    # einfache Erfolgsmeldung – Detailformat kannst du später hübscher machen
+    typer.echo("Ausführung abgeschlossen.")
+    typer.echo(str(summary))

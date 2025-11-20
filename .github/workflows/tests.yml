@@ -1,12 +1,20 @@
-name: tests
+# .github/workflows/tests.yml
+name: CI
 
 on:
   push:
+    branches: [ main ]
   pull_request:
 
 jobs:
-  pytest:
-    runs-on: ubuntu-latest
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.11"]
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -14,14 +22,32 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest
+          pip install pytest ruff black
+
+      # Optional: install your package (nice if you drop pytest.ini pythonpath later)
+      - name: Install package (editable)
+        if: hashFiles('pyproject.toml') != ''
+        run: pip install -e .
+
+      - name: Lint (ruff)
+        run: ruff check .
+
+      - name: Format check (black)
+        run: black --check .
 
       - name: Run tests
-        run: |
-          pytest -q tests --maxfail=1 --disable-warnings
+        run: pytest -q
