@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+
 @dataclass(slots=True, kw_only=True)
 class Summary:
     """Aggregiert Move-/Dry-Run-Zahlen für einen Durchlauf."""
+
     out_root: Path
     moved: int = 0
     simulated: int = 0
@@ -32,5 +34,5 @@ class Summary:
             f"zielbasis={self.out_root}"
         )
 
-    def __str__(self) -> str:  
+    def __str__(self) -> str:
         return self.render()

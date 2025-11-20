@@ -19,7 +19,7 @@ def test_dedupe_execute_moves_file(tmp_path, monkeypatch):
                 action="move",
                 src=src,
                 dst=dst,
-                reason="test-execute", 
+                reason="test-execute",
             )
         ]
 
@@ -63,7 +63,6 @@ def test_dedupe_dry_run_does_not_move_file(tmp_path, monkeypatch):
 
     # Ausgabe soll erkennbar Dry-Run sein
     assert "Dry-Run" in result.stdout
-
 
 
 def test_dedupe_no_duplicates_found(tmp_path, monkeypatch):

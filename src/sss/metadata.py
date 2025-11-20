@@ -3,12 +3,11 @@
 - optional image width/height via Pillow
 """
 
-
-
 from pathlib import Path
 import hashlib
 import mimetypes
 from PIL import Image, UnidentifiedImageError
+
 
 def get_file_ext(path: Path | str) -> str:
     """Return file extension in lowercase without dot ('' if none)."""
@@ -22,7 +21,6 @@ def get_file_size(path: Path | str) -> int:
     return p.stat().st_size
 
 
-
 def get_sha256(path: Path | str) -> str:
     """Return SHA-256 hex digest of file content."""
     p = Path(path)
@@ -31,7 +29,6 @@ def get_sha256(path: Path | str) -> str:
         for chunk in iter(lambda: f.read(8192), b""):
             h.update(chunk)
     return h.hexdigest()
-
 
 
 def get_mime_type(path: Path | str) -> str:
@@ -48,8 +45,6 @@ def get_image_size(path: Path | str) -> tuple[int, int]:
     p = Path(path)
     with Image.open(p) as img:
         return img.size  # (width, height)
-
-
 
 
 def extract_metadata(path: Path | str) -> dict:
@@ -69,4 +64,3 @@ def extract_metadata(path: Path | str) -> dict:
         except UnidentifiedImageError:
             pass
     return md
-

@@ -4,12 +4,11 @@ from pathlib import Path
 from datetime import datetime
 import sys
 from typer.testing import CliRunner  # type: ignore
-from sss.cli import app              # jetzt importierbar
+from sss.cli import app  # jetzt importierbar
 
 # Repo-Root/src auf den Modulpfad legen (damit "from sss..." funktioniert)
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT / "src"))
-
 
 
 runner = CliRunner()
@@ -44,7 +43,6 @@ def test_scan_creates_year_month_dirs(tmp_path: Path):
     assert (target_dir / "shot.png").exists()
 
 
-
 def test_scan_handles_duplicates(tmp_path: Path):
     src = tmp_path / "in"
     out = tmp_path / "out"
@@ -55,12 +53,16 @@ def test_scan_handles_duplicates(tmp_path: Path):
 
     # 1. Erste Datei erstellen und verschieben
     _make_fake_png(f, ts)
-    result = runner.invoke(app, ["scan", str(src), "--no-dry-run", "--out-dir", str(out)])
+    result = runner.invoke(
+        app, ["scan", str(src), "--no-dry-run", "--out-dir", str(out)]
+    )
     assert result.exit_code == 0, result.output
 
     # 2. Zweite Datei mit gleichem Namen erstellen und nochmal verschieben
     _make_fake_png(f, ts)
-    result = runner.invoke(app, ["scan", str(src), "--no-dry-run", "--out-dir", str(out)])
+    result = runner.invoke(
+        app, ["scan", str(src), "--no-dry-run", "--out-dir", str(out)]
+    )
     assert result.exit_code == 0, result.output
 
     # 3. Ergebnis prüfen

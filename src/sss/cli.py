@@ -8,9 +8,8 @@ from .summary import Summary
 import sss.dedupe as dedupe_module
 
 
-
-
 app = typer.Typer(no_args_is_help=True)
+
 
 @app.callback()
 def main():
@@ -26,8 +25,12 @@ def hello(name: str = "Freund"):
 @app.command()
 def scan(
     path: Path,
-    out_dir: Path = typer.Option(None, "--out-dir", help="Zielbasis (default: <path>/_by_date)"),
-    dry_run: bool = typer.Option(True, "--dry-run/--no-dry-run", help="Nur simulieren, nichts verschieben"),
+    out_dir: Path = typer.Option(
+        None, "--out-dir", help="Zielbasis (default: <path>/_by_date)"
+    ),
+    dry_run: bool = typer.Option(
+        True, "--dry-run/--no-dry-run", help="Nur simulieren, nichts verschieben"
+    ),
 ):
     in_root = Path(path)
 
@@ -47,9 +50,10 @@ def scan(
         typer.echo("Keine Screenshots gefunden.")
         raise typer.Exit(code=0)
 
+    sorted_screenshots = sorted(
+        screenshots, key=lambda p: p.stat().st_mtime, reverse=True
+    )
 
-    sorted_screenshots = sorted(screenshots, key = lambda p: p.stat().st_mtime, reverse=True)
-   
     summary = Summary(out_root=out_root)
 
     typer.echo("Gefundene Screenshots:")
@@ -58,7 +62,9 @@ def scan(
         mtime = file_path.stat().st_mtime
         change_time = datetime.fromtimestamp(mtime).strftime("%d.%m.%Y %H:%M:%S")
         file_size_mb = file_path.stat().st_size / (1024 * 1024)
-        typer.echo(f"PLAN: {file_path.name} -> {dest_dir}  ({file_size_mb:.2f} MB, {change_time})")
+        typer.echo(
+            f"PLAN: {file_path.name} -> {dest_dir}  ({file_size_mb:.2f} MB, {change_time})"
+        )
 
         if not dry_run:
             dest_dir = build_target_path(file_path, out_root)
@@ -74,8 +80,8 @@ def scan(
 
 if __name__ == "__main__":
     import sys
-    sys.exit(app())
 
+    sys.exit(app())
 
 
 @app.command()
@@ -106,7 +112,6 @@ def dedupe(
     # == execute == True ==
     summary = Summary(out_root=directory)
     dedupe_module.execute_actions(actions, summary)
-
 
     # einfache Erfolgsmeldung – Detailformat kannst du später hübscher machen
     typer.echo("Ausführung abgeschlossen.")

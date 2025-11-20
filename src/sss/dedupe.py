@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from collections import defaultdict
 from typing import Literal
 
+
 def compute_sha256(path: Path, *, chunk_size: int = 1 << 20) -> str:
     """
     Berechnet den SHA-256-Hash einer Datei und gibt ihn als 64-stelligen Hex-String zurück.
@@ -21,15 +22,13 @@ def compute_sha256(path: Path, *, chunk_size: int = 1 << 20) -> str:
     return h.hexdigest()  # lowercase 64-hex
 
 
-
 @dataclass
 class DuplicateGroup:
     """Repräsentiert eine Gruppe von Dateien mit identischem Inhalt."""
-    size: int            # Dateigröße in Bytes
-    digest: str          # SHA-256 Hash
-    files: list[Path]    # Liste der Pfade (mind. 2)
 
-
+    size: int  # Dateigröße in Bytes
+    digest: str  # SHA-256 Hash
+    files: list[Path]  # Liste der Pfade (mind. 2)
 
 
 def find_duplicate_groups(paths: list[Path]) -> list[DuplicateGroup]:
@@ -94,7 +93,6 @@ def choose_keeper(group: DuplicateGroup, *, policy: str = "newest") -> Path:
         raise ValueError(f"Unbekannte Policy: {policy!r}")
 
 
-
 @dataclass
 class DedupAction:
     src: Path
@@ -102,7 +100,10 @@ class DedupAction:
     dst: Path
     reason: str
 
-def plan_moves(group: DuplicateGroup, keeper: Path, *, target_dir: Path) -> list[DedupAction]:
+
+def plan_moves(
+    group: DuplicateGroup, keeper: Path, *, target_dir: Path
+) -> list[DedupAction]:
     """
     Erzeuge einen Dry-Run-Plan: Alle Nicht-Keeper einer Gruppe
     werden 'virtuell' nach target_dir/<digest[:8]>/<original_name> verschoben.
@@ -122,7 +123,7 @@ def plan_moves(group: DuplicateGroup, keeper: Path, *, target_dir: Path) -> list
         reason = f"duplicate of {keeper.name} ({digest_prefix})"
         actions.append(DedupAction(src=src, action="move", dst=dst, reason=reason))
 
-    return actions 
+    return actions
 
 
 def execute_actions(actions, summary) -> None:

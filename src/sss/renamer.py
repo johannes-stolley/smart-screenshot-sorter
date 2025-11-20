@@ -1,14 +1,16 @@
 from pathlib import Path
 import re
 
+
 def sanitize_filename(name: str) -> str:
     """
     Entfernt ungültige Zeichen aus einem Dateinamen (Windows-kompatibel).
     Beispiel: 'bild:neu?.png' -> 'bild_neu_.png'
     """
-    name = re.sub(r'[<>:"/\\|?*]+', "_", name)  
-    name = name.strip().rstrip(".")             
-    return name or "_"                          
+    name = re.sub(r'[<>:"/\\|?*]+', "_", name)
+    name = name.strip().rstrip(".")
+    return name or "_"
+
 
 def unique_path(dest_dir: Path, filename: str) -> Path:
     """

@@ -86,7 +86,6 @@ def test_execute_actions_moves_multiple_files(tmp_path: Path):
     assert dst_file2.read_bytes() == content2
 
 
-
 def test_execute_actions_raises_on_unsupported_action(tmp_path: Path):
     src_dir = tmp_path / "src"
     dst_dir = tmp_path / "dst"
@@ -101,7 +100,7 @@ def test_execute_actions_raises_on_unsupported_action(tmp_path: Path):
     # absichtlich falsche Action
     action = DedupAction(
         src=src_file,
-        action="delete",   # <- wird NICHT unterstützt
+        action="delete",  # <- wird NICHT unterstützt
         dst=dst_file,
         reason="invalid",
     )

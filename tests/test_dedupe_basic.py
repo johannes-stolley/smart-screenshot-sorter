@@ -1,8 +1,16 @@
-import os 
-import time 
+import os
+import time
 from pathlib import Path
-from sss.dedupe import compute_sha256, find_duplicate_groups, DuplicateGroup, choose_keeper, plan_moves, DedupAction
+from sss.dedupe import (
+    compute_sha256,
+    find_duplicate_groups,
+    DuplicateGroup,
+    choose_keeper,
+    plan_moves,
+    DedupAction,
+)
 from sss.mover import execute_actions
+
 
 def test_compute_sha256_stable_and_chunked(tmp_path: Path):
     # zwei kleine, inhaltsgleiche Dateien
@@ -23,8 +31,8 @@ def test_compute_sha256_stable_and_chunked(tmp_path: Path):
     big = tmp_path / "big.bin"
     big.write_bytes(b"xyz" * (1024 * 1024))  # ~3 MB
 
-    d_default = compute_sha256(big)                 # Standard-Chunk
-    d_tiny = compute_sha256(big, chunk_size=8)      # winzige Chunks
+    d_default = compute_sha256(big)  # Standard-Chunk
+    d_tiny = compute_sha256(big, chunk_size=8)  # winzige Chunks
 
     assert d_default == d_tiny
 
@@ -60,7 +68,6 @@ def test_find_duplicate_groups_basic(tmp_path: Path):
     assert set(map(Path, g.files)) == {a, b}
 
 
-
 def test_choose_keeper_newest(tmp_path: Path):
     # Zwei identische Dateien anlegen
     a = tmp_path / "a.txt"
@@ -87,7 +94,6 @@ def test_choose_keeper_newest(tmp_path: Path):
     assert keep_default == b
 
 
-
 def test_plan_moves_layout(tmp_path: Path):
     # Arrange: zwei identische Dateien
     a = tmp_path / "a.txt"
@@ -100,8 +106,8 @@ def test_plan_moves_layout(tmp_path: Path):
     group = DuplicateGroup(size=len(content), digest=digest, files=[a, b])
 
     # Keeper bestimmen (b soll neuer sein)
-    b.write_bytes(content + b"!")   # kurz ändern, um mtime anzuheben
-    b.write_bytes(content)          # Inhalt zurücksetzen, Hash bleibt gleich
+    b.write_bytes(content + b"!")  # kurz ändern, um mtime anzuheben
+    b.write_bytes(content)  # Inhalt zurücksetzen, Hash bleibt gleich
     keeper = choose_keeper(group, policy="newest")
     assert keeper in {a, b}  # sanity check
 

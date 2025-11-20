@@ -39,10 +39,9 @@ def test_get_file_ext_no_extension(tmp_path):
     assert get_file_ext(f) == ""
 
 
-
 def test_get_file_size_bytes(tmp_path):
     f = tmp_path / "a.bin"
-    f.write_bytes(b"abc") 
+    f.write_bytes(b"abc")
     assert get_file_size(f) == 3
 
 
@@ -52,23 +51,20 @@ def test_get_file_size_accepts_str_path(tmp_path):
     assert get_file_size(str(f)) == 5
 
 
-
-
 def test_get_sha256_basic(tmp_path):
     f = tmp_path / "data.txt"
     f.write_bytes(b"abc")
 
-   
     expected = hashlib.sha256(b"abc").hexdigest()
 
     assert get_sha256(f) == expected
-
 
 
 def test_get_mime_type_png(tmp_path):
     f = tmp_path / "image.PNG"
     f.write_bytes(b"x")
     assert get_mime_type(f) == "image/png"
+
 
 def test_get_mime_type_jpeg(tmp_path):
     f = tmp_path / "foto.jpeg"
@@ -82,10 +78,9 @@ def test_get_mime_type_unknown_extension(tmp_path):
     assert get_mime_type(f) == "application/octet-stream"
 
 
-
 def test_extract_metadata_basic(tmp_path):
     f = tmp_path / "image.PNG"
-    f.write_bytes(b"abc") 
+    f.write_bytes(b"abc")
 
     expected_sha = hashlib.sha256(b"abc").hexdigest()
 
@@ -95,7 +90,6 @@ def test_extract_metadata_basic(tmp_path):
     assert md["size"] == 3
     assert md["mime"] == "image/png"
     assert md["sha256"] == expected_sha
-
 
 
 def test_get_image_size_png(tmp_path):

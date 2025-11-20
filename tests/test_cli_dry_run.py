@@ -4,6 +4,7 @@ import sss.dedupe as dedupe_module
 
 runner = CliRunner()
 
+
 def test_dedupe_dry_run(tmp_path, monkeypatch):
     f1 = tmp_path / "a.jpg"
     f2 = tmp_path / "b.jpg"
