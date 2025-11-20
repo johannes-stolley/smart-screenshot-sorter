@@ -3,18 +3,27 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "smart-screenshot-sorter"
+name = "smart-screenshot-sorter"          # so heißt das Package auf PyPI
 version = "0.1.0"
 description = "CLI tool to scan, sort and deduplicate screenshot folders."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "Proprietary" }
+license = { text = "MIT" }        # falls du es NICHT open-source machen willst
 authors = [
   { name = "Johannes Stolley" }
 ]
 
 dependencies = [
   "typer>=0.12",
+  "rich>=13.0",
+  "Pillow>=10.0",
+]
+
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Operating System :: OS Independent",
+  "License :: OSI Approved :: MIT License",
 ]
 
 [project.optional-dependencies]
@@ -25,6 +34,8 @@ dev = [
   "black",
   "pre-commit",
   "Pillow",
+  "build",
+  "twine",
 ]
 
 [project.scripts]
